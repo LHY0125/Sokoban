@@ -3,12 +3,15 @@ package service;
 import model.GameState;
 import model.Position;
 import model.TileType;
+
+import java.io.File;
 import java.nio.file.*;
 import java.util.*;
+import java.io.BufferedReader;
 
 public class LevelLoader {
     /*
-     * 负责人: 
+     * 负责人: 李俊杰
      * 功能: 根据关卡编号加载并初始化游戏状态
      * 内容：
      * 1. 统计关卡总数：扫描目录中的关卡文件用于 UI 展示（totalLevels）
@@ -34,9 +37,62 @@ public class LevelLoader {
      * - GameState：包含底层(base)、动态层(map)、玩家坐标(player)、当前关卡(levelIndex)、总关卡(total)
      */
     public static GameState load(int levelIndex) {
+        int total = countLevels();
+        File folder = new File(String.format("map/level%d.txt", levelIndex + 1));
+
+        // 读取关卡文件内容到列表
+        List<String> mapTxt = new ArrayList<>();
+        try (BufferedReader br = Files.newBufferedReader(folder.toPath())) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                mapTxt.add(line);
+            }
+        } catch (Exception e) {
+            // 读取失败时使用回退关卡
+            mapTxt = fallback();
+        }
+
+        int h = mapTxt.size();
+        int w = (h > 0) ? mapTxt.get(0).length() : 0;
+
+        int[][] base = new int[h][w];
+        int[][] map = new int[h][w];
+        Position player = new Position(0, 0);
+
+        for (int i = 0; i < h; i++) {
+            String line = mapTxt.get(i);
+            for (int j = 0; j < w; j++) {
+                char ch = line.charAt(j);
+                switch (ch) {
+                    case '#':
+                        base[i][j] = TileType.WALL.code;
+                        break;
+                    case '○':
+                        base[i][j] = TileType.GOAL.code;
+                        break;
+                    case '■':
+                        map[i][j] = TileType.BOX.code;
+                        break;
+                    case '☑':
+                        base[i][j] = TileType.GOAL.code;
+                        map[i][j] = TileType.BOX_ON_GOAL.code;
+                        break;
+                    case '☺':
+                        map[i][j] = TileType.PLAYER.code;
+                        player = new Position(i, j);
+                        break;
+                    default:
+                        // 空地，保持默认值 0
+                        break;
+                }
+            }
+        }
+
+        GameState gameState = new GameState(base, map, player, levelIndex, total);
+        //System.out.println(gameState);
 
         // 初始化游戏状态
-        return new GameState(base, map, player, levelIndex, total);
+        return gameState;
     }
 
 
@@ -55,13 +111,17 @@ public class LevelLoader {
      * 返回值:
      * - int：关卡总数
      */
-    private static int countLevels() {
+    public static int countLevels() {
+        final String dirPath = "map";
+        File folder = new File(dirPath);
 
-        return 1;
-    }
-
-    public static int totalLevels() {
-        return countLevels();
+        if (folder.exists() && folder.isDirectory()) {
+            String[] files = folder.list((dir, name) -> name.matches("level\\d+\\.txt"));
+            if (files != null) {
+                return files.length;
+            }
+        }
+        return 1; // 默认至少有一个回退关卡
     }
 
     /*

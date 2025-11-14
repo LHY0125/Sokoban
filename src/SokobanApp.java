@@ -14,9 +14,9 @@ public class SokobanApp {
      * 1. 初始化输入流 `Scanner`
      * 2. 循环展示主菜单并读取用户输入
      * 3. 输入处理：
-     *    - "1"：进入关卡1（索引0）游戏循环
-     *    - "2"：展示选关提示，读取关卡编号并进入对应关卡
-     *    - "3"：退出循环并关闭输入
+     * - "1"：进入关卡1（索引0）游戏循环
+     * - "2"：展示选关提示，读取关卡编号并进入对应关卡
+     * - "3"：退出循环并关闭输入
      * 4. 资源释放：退出时关闭 `Scanner`
      * 异常与边界：
      * - 非法输入（空/非数字）安全忽略或捕获异常
@@ -35,22 +35,22 @@ public class SokobanApp {
             // 处理用户输入
             if ("1".equals(input)) {
                 gameLoop(scanner, 0);
-            } 
-            else if ("2".equals(input)) {
-                ConsoleMenuView.showSelectLevel();
+            } else if ("2".equals(input)) {
+                int total = LevelLoader.totalLevels();
+                ConsoleMenuView.showSelectLevel(total);
                 String lv = scanner.nextLine();
 
                 // 处理选关输入
                 if ("0".equals(lv)) {
                     continue;
                 }
+
                 try {
                     int level = Integer.parseInt(lv);
                     gameLoop(scanner, Math.max(0, level - 1));
                 } catch (Exception ignored) {
                 }
-            } 
-            else if ("3".equals(input)) {
+            } else if ("3".equals(input)) {
                 break;
             }
         }
@@ -64,8 +64,8 @@ public class SokobanApp {
      * 1. 加载并渲染初始状态
      * 2. 循环读取用户输入（取首字符，忽略大小写）
      * 3. 功能键：
-     *    - Q：返回主菜单
-     *    - R：重开当前关卡
+     * - Q：返回主菜单
+     * - R：重开当前关卡
      * 4. 移动键：W/S/A/D 映射为方向 0/1/2/3
      * 5. 合法性校验：调用 `MoveValidator.canMove`
      * 6. 执行移动与胜利判断：`GameEngine.move`、`GameEngine.isWin`
@@ -106,24 +106,16 @@ public class SokobanApp {
             // 转换为移动方向
             try {
                 int dir = -1;
-                if (c == 'w')
-                {
+                if (c == 'w') {
                     dir = 0;
-                }
-                else if (c == 's')
-                {
+                } else if (c == 's') {
                     dir = 1;
-                }
-                else if (c == 'a')
-                {
+                } else if (c == 'a') {
                     dir = 2;
-                }
-                else if (c == 'd')
-                {
+                } else if (c == 'd') {
                     dir = 3;
                 }
-                if (dir == -1)
-                {
+                if (dir == -1) {
                     continue;
                 }
                 // 检查移动是否合法

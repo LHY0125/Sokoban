@@ -82,6 +82,12 @@ public class ConsoleMenuView {
      * - 无
      */
     public static void showSelectLevel(int total) {
-
+        System.out.println("******************************");
+        for (int i = 1; i <= total; i++) {
+            System.out.printf("          %d.关卡%d          \n", i, i);
+        }
+        System.out.println("           请选择关卡:          ");
+        System.out.println("        返回至主菜单请输入0       ");
+        System.out.println("******************************");
     }
 }
