@@ -8,7 +8,7 @@ import java.util.*;
 
 public class LevelLoader {
     /*
-     * 负责人: 李俊杰
+     * 负责人: 
      * 功能: 根据关卡编号加载并初始化游戏状态
      * 内容：
      * 1. 统计关卡总数：扫描目录中的关卡文件用于 UI 展示（totalLevels）
@@ -34,67 +34,14 @@ public class LevelLoader {
      * - GameState：包含底层(base)、动态层(map)、玩家坐标(player)、当前关卡(levelIndex)、总关卡(total)
      */
     public static GameState load(int levelIndex) {
-        int total = countLevels();
-        File folder = new File(String.format("map/level%d.txt", levelIndex + 1));
-
-        // 读取关卡文件内容到列表
-        List<String> mapTxt = new ArrayList<>();
-        try (BufferedReader br = Files.newBufferedReader(folder.toPath())) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                mapTxt.add(line);
-            }
-        } catch (Exception e) {
-            // 读取失败时使用回退关卡
-            mapTxt = fallback();
-        }
-
-        int h = mapTxt.size();
-        int w = (h > 0) ? mapTxt.get(0).length() : 0;
-
-        int[][] base = new int[h][w];
-        int[][] map = new int[h][w];
-        Position player = new Position(0, 0);
-
-        for (int i = 0; i < h; i++) {
-            String line = mapTxt.get(i);
-            for (int j = 0; j < w; j++) {
-                char ch = line.charAt(j);
-                switch (ch) {
-                    case '#':
-                        base[i][j] = TileType.WALL.code;
-                        break;
-                    case '○':
-                        base[i][j] = TileType.GOAL.code;
-                        break;
-                    case '■':
-                        map[i][j] = TileType.BOX.code;
-                        break;
-                    case '☑':
-                        base[i][j] = TileType.GOAL.code;
-                        map[i][j] = TileType.BOX_ON_GOAL.code;
-                        break;
-                    case '☺':
-                        map[i][j] = TileType.PLAYER.code;
-                        player = new Position(i, j);
-                        break;
-                    default:
-                        // 空地，保持默认值 0
-                        break;
-                }
-            }
-        }
-
-        GameState gameState = new GameState(base, map, player, levelIndex, total);
-        // System.out.println(gameState);
 
         // 初始化游戏状态
-        return gameState;
+        return new GameState(base, map, player, levelIndex, total);
     }
 
 
     /*
-     * 负责人: 
+     * 负责人: 王宇晗
      * 功能: 统计关卡数量
      * 内容：
      * 1. 扫描 `map` 目录：匹配形如 `level*.txt` 的关卡文件
@@ -109,12 +56,24 @@ public class LevelLoader {
      * - int：关卡总数
      */
     private static int countLevels() {
+        // 1. 定位到项目内的map文件夹（相对项目根目录的路径）
+        String levelDirPath = "map/";
+        File mapDir = new File(levelDirPath);
 
-        return 1;
-    }
+        // 2. 校验map文件夹是否存在
+        if (!mapDir.exists() || !mapDir.isDirectory()) {
+            System.err.println("关卡目录不存在：" + mapDir.getAbsolutePath());
+            return 1;
+        }
 
-    public static int totalLevels() {
-        return countLevels();
+        // 3. 筛选map文件夹中以"level"开头、".txt"结尾的文件
+        File[] levelFiles = mapDir.listFiles(file -> {
+            String fileName = file.getName();
+            return fileName.startsWith("level") && fileName.endsWith(".txt");
+        });
+
+        // 4. 返回有效关卡文件的数量（至少能识别到level1~level5这5个文件）
+        return (levelFiles != null) ? levelFiles.length : 0;
     }
 
     /*
