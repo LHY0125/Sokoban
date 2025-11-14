@@ -6,6 +6,15 @@ import service.GameEngine;
 import view.ConsoleMenuView;
 import view.ConsoleGameView;
 
+/**
+ * @file SokobanApp.java
+ * @brief 主程序入口与主菜单循环
+ * @note 主程序入口与主菜单循环，展示主菜单并处理用户输入
+ * @brief 如果想打包，将以下指令复制到powershell
+ * @brief makensis installer\installer.nsi
+ * @brief iscc installer\installer.iss
+ */
+
 public class SokobanApp {
     /*
      * 负责人: 刘航宇
@@ -83,7 +92,7 @@ public class SokobanApp {
     private static void gameLoop(Scanner scanner, int levelIndex) {
         GameState state = LevelLoader.load(levelIndex);
         ConsoleGameView.render(state);
-        
+
         while (true) {
             // 渲染游戏状态
             ConsoleGameView.render(state);
