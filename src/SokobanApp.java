@@ -1,11 +1,12 @@
 import java.util.Scanner;
 import model.GameState;
-import model.TileType;
 import service.LevelLoader;
 import service.MoveValidator;
-import service.GameEngine;
+import service.Settings;
+import java.util.ArrayDeque;
 import view.ConsoleMenuView;
 import view.ConsoleGameView;
+import service.UndoUtil;
 
 /**
  * @file SokobanApp.java
@@ -37,13 +38,6 @@ public class SokobanApp {
      * - 无
      */
     public static void main(String[] args) {
-        // // 设置控制台字符编码为UTF-8，避免中文乱码
-        // try {
-        //     System.setOut(new java.io.PrintStream(System.out, true, java.nio.charset.StandardCharsets.UTF_8));
-        //     System.setErr(new java.io.PrintStream(System.err, true, java.nio.charset.StandardCharsets.UTF_8));
-        // } catch (Exception e) {
-        // }
-        
         Scanner scanner = new Scanner(System.in);
         // 主循环，展示主菜单并处理用户输入
         mainLoop: while (true) {
@@ -64,6 +58,11 @@ public class SokobanApp {
                     // 读取用户输入的关卡编号
                     String lv = scanner.nextLine();
                     if ("0".equals(lv)) {
+                        break;
+                    }
+
+                    // 校验并处理排行榜查看命令
+                    if (ConsoleGameView.tryRank(lv, scanner)) {
                         break;
                     }
                     
@@ -92,8 +91,15 @@ public class SokobanApp {
                 case "6":
                     // 展示游戏设置
                     ConsoleMenuView.showSettings();
-                    ConsoleMenuView.printReturnHint();
-                    scanner.nextLine();
+                    String s = scanner.nextLine();
+                    if (s != null && !s.isEmpty()) {
+                        try {
+                            int v = Integer.parseInt(s.trim());
+                            Settings.setMaxUndo(v);
+                        } catch (Exception ignored) {
+                            
+                        }
+                    }
                     break;
                 default:
                     break;
@@ -128,6 +134,10 @@ public class SokobanApp {
         GameState state = LevelLoader.load(levelIndex);
         ConsoleGameView.render(state);
 
+        // 用于存储玩家每一步的快照，用于悔步操作
+        ArrayDeque<UndoUtil.Snapshot> undoStack = new ArrayDeque<>();
+        int undoUsed = 0;
+
         while (true) {
             // 渲染游戏状态
             ConsoleGameView.render(state);
@@ -139,75 +149,60 @@ public class SokobanApp {
 
             // 转换为小写字母
             char c = Character.toLowerCase(input.charAt(0));
-            if (c == 'q') {
-                break;
-            }
-            if (c == 'r') {
-                state = LevelLoader.load(levelIndex);
-                ConsoleGameView.render(state);
-                continue;
-            }
-            // 转换为移动方向
-            try {
-                int dir = -1;
-                switch (c) {
-                    case 'w':
-                        dir = 0;
-                        break;
-                    case 's':
-                        dir = 1;
-                        break;
-                    case 'a':
-                        dir = 2;
-                        break;
-                    case 'd':
-                        dir = 3;
-                        break;
-                    default:
-                        break;
-                }
-                if (dir == -1) {
+            switch (c) {
+                case 'w':
+                    if (MoveValidator.handleMove(scanner, state, 0, undoStack, levelIndex)) {
+                        return;
+                    }
                     continue;
-                }
-                // 检查移动是否合法
-                if (MoveValidator.canMove(state, dir)) {
-                    GameEngine.move(state, dir);
-                    if (GameEngine.isWin(state)) {
-                        ConsoleGameView.win();
-                        break;
+                case 's':
+                    if (MoveValidator.handleMove(scanner, state, 1, undoStack, levelIndex)) {
+                        return;
                     }
-                }
-                // 检查移动是否会导致箱子被推到墙上
-                else {
-                    int dx = (dir == 0 ? -1 : dir == 1 ? 1 : 0);
-                    int dy = (dir == 2 ? -1 : dir == 3 ? 1 : 0);
-                    int nx = state.player.x + dx;
-                    int ny = state.player.y + dy;
-                    int t = state.map[nx][ny];
-
-                    // 检查移动是否会导致箱子被推到墙上
-                    if (nx >= 0 && ny >= 0 && nx < state.map.length && ny < state.map[0].length) {
-                        if (state.base[nx][ny] == TileType.WALL.code) {
-                            System.out.println("无法移动，前方是墙");
-                        }
-
-                        else if (t == TileType.BOX.code || t == TileType.BOX_ON_GOAL.code) {
-                            int bx = nx + dx;
-                            int by = ny + dy;
-                            if (bx >= 0 && by >= 0 && bx < state.map.length && by < state.map[0].length) {
-                                int behindDyn = state.map[bx][by];
-                                int behindBase = state.base[bx][by];
-                                if (behindBase == TileType.WALL.code || behindDyn == TileType.BOX.code || behindDyn == TileType.BOX_ON_GOAL.code) {
-                                    System.out.println("箱子无法推动");
-                                }
+                    continue;
+                case 'a':
+                    if (MoveValidator.handleMove(scanner, state, 2, undoStack, levelIndex)) {
+                        return;
+                    }
+                    continue;
+                case 'd':
+                    if (MoveValidator.handleMove(scanner, state, 3, undoStack, levelIndex)) {
+                        return;
+                    }
+                    continue;
+                case 'q':
+                    // 返回主菜单
+                    return;
+                case 'r':
+                    // 重开当前关卡
+                    state = LevelLoader.load(levelIndex);
+                    ConsoleGameView.render(state);
+                    undoStack.clear();
+                    undoUsed = 0;
+                    continue;
+                case 'z':
+                    // 悔步操作
+                    ConsoleMenuView.showUndoConfirm();
+                    String ans = scanner.nextLine();
+                    if (ans != null && !ans.isEmpty() && (ans.charAt(0) == 'y' || ans.charAt(0) == 'Y')) {
+                        if (undoStack.isEmpty()) {
+                            System.out.println("没有可撤销的步骤");
+                        } else if (undoUsed >= Settings.getMaxUndo()) {
+                            System.out.println("达到悔步次数上限");
+                        } else {
+                            UndoUtil.Snapshot s = undoStack.pop();
+                            UndoUtil.restore(state, s);
+                            if (state.steps > 0) {
+                                state.steps -= 1;
                             }
+                            undoUsed += 1;
+                            ConsoleGameView.render(state);
                         }
                     }
-                }
-                // 渲染游戏状态
-                ConsoleGameView.render(state);
-            } catch (Exception ignored) {
+                    continue;
+                default:
+                    break;
             }
         }
-    }
+    }  
 }

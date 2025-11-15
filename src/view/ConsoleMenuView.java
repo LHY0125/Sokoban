@@ -91,11 +91,7 @@ public class ConsoleMenuView {
      */
     public static void showSettings() {
         System.out.println("*******************************");
-        System.out.println("*******************************");
-        System.out.println("*******************************");
-        System.out.println("            敬请期待!            ");
-        System.out.println("*******************************");
-        System.out.println("*******************************");
+        System.out.println("   设置悔步次数上限(回车保持不变)   ");
         System.out.println("*******************************");
     }
 
@@ -124,7 +120,7 @@ public class ConsoleMenuView {
      * - 无
      */
     public static void printOperationHint() {
-        System.out.println("操作提示：W上，S下，A左，D右，R重新开始，Q返回主菜单");
+        System.out.println("操作提示：W上，S下，A左，D右，R重新开始，Z悔步，Q返回主菜单");
     }
 
     /*
@@ -160,6 +156,50 @@ public class ConsoleMenuView {
         }
         System.out.println("请选择关卡:");
         System.out.println("返回至主菜单请输入0");
+        System.out.println("查看排行榜请输入 L+编号 (如 L3)");
+        System.out.println("******************************");
+    }
+
+    /*
+     * 负责人: 刘航宇
+     * 功能: 展示悔步确认界面
+     * 内容：
+     * 1. 打印提示：“确认悔步? 输入 Y 确认 / N 取消”
+     * 参数:
+     * - 无
+     * 返回值:
+     * - 无
+     */
+    public static void showUndoConfirm() {
+        System.out.println("确认悔步? 输入 Y 确认 / N 取消");
+    }
+
+    /*
+     * 负责人: 余瑜
+     * 功能: 展示排行榜
+     * 内容：
+     * 1. 打印排行榜标题：“关卡X 排行榜”
+     * 2. 遍历排行榜条目，按步数排序，展示前10名
+     * 3. 若排行榜为空，打印“暂无记录”
+     * 参数:
+     * - levelIndex：关卡索引，用于打印标题
+     * - list：排行榜条目列表，按步数排序
+     * 返回值:
+     * - 无
+     */
+    public static void showLeaderboard(int levelIndex, java.util.List<model.LeaderboardEntry> list) {
+        System.out.println("******************************");
+        System.out.printf("关卡%d 排行榜\n", levelIndex + 1);
+        if (list == null || list.isEmpty()) {
+            System.out.println("暂无记录");
+        }
+        else {
+            int rank = 1;
+            for (model.LeaderboardEntry e : list) {
+                System.out.printf("%d. %s - 步数:%d - 留言:%s\n", rank++, e.name, e.steps, e.message);
+                if (rank > 10) break;
+            }
+        }
         System.out.println("******************************");
     }
 }
