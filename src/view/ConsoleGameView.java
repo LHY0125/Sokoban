@@ -2,6 +2,7 @@ package view;
 
 import model.GameState;
 import util.Renderer;
+import model.TileType;
 
 public class ConsoleGameView {
     /*
@@ -43,14 +44,7 @@ public class ConsoleGameView {
 
         // 打印状态栏：当前关卡/总关卡、剩余目标点、步数
         // 先计算剩余目标点remainingTargets
-        int remainingTargets = 0;
-        for (int i = 0; i < rowCount; i++) {
-            for (int j = 0; j < colCount; j++) {
-                if (base[i][j] == 3 && map[i][j] != 5) {
-                    remainingTargets++;
-                }
-            }
-        }
+        int remainingTargets = remainingGoals(state);
         
         // 然后打印状态栏：当前关卡/总关卡、剩余目标点、步数
         System.out.printf("当前关卡:%d/总关卡:%d | 剩余目标点:%d | 步数:%d", state.levelIndex + 1, state.totalLevels, remainingTargets, state.steps);
@@ -66,8 +60,7 @@ public class ConsoleGameView {
             System.out.println();
         }
 
-        // 打印操作提示：W/S/A/D，R，Q
-        System.out.println("操作提示：W上，S下，A左，D右，R重新开始，Q返回主菜单");
+        ConsoleMenuView.printOperationHint();
     }
 
 
@@ -90,11 +83,11 @@ public class ConsoleGameView {
      */
     public static void win() {
         System.out.print("\u001B[2J\u001B[3J\u001B[H");
-        System.out.println("胜利");
+        ConsoleMenuView.showVictory();
     }
 
     /*
-        负责人: 
+        负责人: 张启亮
         功能: 计算剩余目标点数量
         内容：
         1. 遍历地图，统计 base 为目标点的格数
@@ -106,7 +99,43 @@ public class ConsoleGameView {
         - int：剩余目标点数量
     */
     private static int remainingGoals(GameState state) {
-        
-        return 1;
+        // 校验入参合法性，避免空指针异常
+        if (state == null || state.base == null || state.map == null) {
+            return 0;
+        }
+
+        int totalGoals = 0; // 总目标点数量
+        int completedGoals = 0; // 已完成（箱子在目标点上）的数量
+
+        // 遍历基础层，统计总目标点数量（base中GOAL对应code为3）
+        for (int[] row : state.base) {
+            // 跳过空行，避免数组越界
+            if (row == null)
+            {
+                continue;
+            }
+            for (int tile : row) {
+                if (tile == TileType.GOAL.code) {
+                    totalGoals++;
+                }
+            }
+        }
+
+        // 遍历动态层，统计已完成的目标点数量（map中BOX_ON_GOAL对应code为5）
+        for (int[] row : state.map) {
+            // 跳过空行，避免数组越界
+            if (row == null)
+            {
+                continue;
+            }
+            for (int tile : row) {
+                if (tile == TileType.BOX_ON_GOAL.code) {
+                    completedGoals++;
+                }
+            }
+        }
+
+        // 计算剩余目标点，确保结果非负（应对异常数据）
+        return Math.max(0, totalGoals - completedGoals);
     }
 }

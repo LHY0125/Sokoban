@@ -10,6 +10,7 @@
   - `view/` 控制台渲染与菜单（`ConsoleGameView`、`ConsoleMenuView`）
   - `util/` 渲染字符映射（`Renderer`）
 - `map/` 关卡文件（`level1.txt`、`level2.txt` ...）
+- `installer/` 安装脚本（`installer.iss`、`installer.nsi`）
 - `LICENSE` MIT 许可证
 
 ## 快速开始（Windows）
@@ -21,17 +22,20 @@
    ```
 3) 运行：
    ```powershell
-   java -cp bin SokobanApp
+   java -Dfile.encoding=UTF-8 -cp bin SokobanApp
    ```
-4) 如控制台出现乱码或不能显示 Unicode：
+4) 如控制台仍出现乱码或不能显示 Unicode：
    - CMD 执行：`chcp 65001`
-   - 或运行时添加：`java -Dfile.encoding=UTF-8 -cp bin SokobanApp`
+   - PowerShell 设为 UTF-8：`[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()`
 
 ## 操作说明
 - 主菜单
   - `1` 开始游戏（第 1 关）
   - `2` 选择关卡
   - `3` 退出
+  - `4` 团队介绍
+  - `5` 如何游玩
+  - `6` 设置
 - 游戏内
   - `W` 上、`S` 下、`A` 左、`D` 右
   - `R` 重新开始当前关卡
@@ -47,6 +51,7 @@
   - `☑` 箱子在目标点上
   - `☺` 玩家
   - `空格` 空地
+- 文件编码：请使用 UTF-8 保存关卡文件以避免 Unicode 字符读取异常
 - 示例：
   ```
   ##########
@@ -76,9 +81,34 @@
 - `util/Renderer`
   - 按基础层/动态层输出字符（优先显示动态层）
 
+## 打包发布（Windows）
+1) 生成可运行 JAR（需有 `build/manifest.mf` 指定 `Main-Class: SokobanApp`）：
+   ```powershell
+   jar --create --file dist\Sokoban.jar --manifest build\manifest.mf -C bin .
+   ```
+2) 生成便携应用镜像（内置 JRE，UTF-8 输出）：
+   ```powershell
+   jpackage --input dist --name Sokoban --main-jar Sokoban.jar --main-class SokobanApp --win-console --type app-image --dest dist\app --java-options "-Dfile.encoding=UTF-8"
+   ```
+   - 运行：`dist\app\Sokoban\Sokoban.exe`
+3) 生成安装包：
+   - Inno Setup：
+     ```powershell
+     iscc installer\installer.iss
+     ```
+     输出目录：`installer\dist`
+   - NSIS：
+     ```powershell
+     makensis installer\installer.nsi
+     ```
+     输出目录：`installer\dist`
+
 ## 屏幕刷新与编码
 - 清屏/置顶光标（ANSI 序列）：`ESC[2J`、`ESC[3J`、`ESC[H`
 - 控制台需支持 UTF-8 与 Unicode 字形；不支持时可将玩家字符改为 `@` 等 ASCII。
+
+## 常见问题
+- 中文/图形字符显示为 `?`：确保编译使用 `-encoding UTF-8`，运行添加 `-Dfile.encoding=UTF-8`，并使用支持 Unicode 的终端字体（如 Segoe UI Symbol/Consolas/Cascadia Mono）。
 
 ## 扩展与开发分工
 - 注释采用“负责人/功能/内容/异常与边界/参数/返回值”的详细风格，便于多人协作。

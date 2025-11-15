@@ -21,7 +21,67 @@ public class MoveValidator {
      * - boolean：是否可以移动
      */
     public static boolean canMove(GameState state, int direction) {
-        
-        return true;
+        if (state == null || state.map == null || state.base == null || state.player == null) {
+            return false;
+        }
+
+        // 计算 dx, dy 并定位前方格
+        int dx = 0, dy = 0;
+        switch (direction) {
+            case 0:
+                dx = -1;
+                break;
+            case 1:
+                dx = 1;
+                break;
+            case 2:
+                dy = -1;
+                break;
+            case 3:
+                dy = 1;
+                break;
+            default:
+                return false;
+        }
+
+        // 定位前方格
+        int rows = state.map.length;
+        int cols = rows > 0 && state.map[0] != null ? state.map[0].length : 0;
+        int px = state.player.x;
+        int py = state.player.y;
+
+        int nx = px + dx;
+        int ny = py + dy;
+
+        if (nx < 0 || ny < 0 || nx >= rows || ny >= cols) {
+            return false;
+        }
+        if (state.base[nx][ny] == TileType.WALL.code) {
+            return false;
+        }
+
+        int dynNext = state.map[nx][ny];
+
+        if (dynNext == TileType.EMPTY.code) {
+            return true;
+        }
+
+        if (dynNext == TileType.BOX.code || dynNext == TileType.BOX_ON_GOAL.code) {
+            int bx = nx + dx;
+            int by = ny + dy;
+            if (bx < 0 || by < 0 || bx >= rows || by >= cols) {
+                return false;
+            }
+            if (state.base[bx][by] == TileType.WALL.code) {
+                return false;
+            }
+            int dynBehind = state.map[bx][by];
+            if (dynBehind == TileType.BOX.code || dynBehind == TileType.BOX_ON_GOAL.code) {
+                return false;
+            }
+            return true;
+        }
+
+        return false;
     }
 }

@@ -20,6 +20,9 @@ public class ConsoleMenuView {
         System.out.println("1. 开始游戏");
         System.out.println("2. 选择关卡");
         System.out.println("3. 退出游戏");
+        System.out.println("4. 团队介绍");
+        System.out.println("5. 如何游玩");
+        System.out.println("6. 设置");
         System.out.print("请选择: ");
     }
 
@@ -98,6 +101,48 @@ public class ConsoleMenuView {
 
     /*
      * 负责人: 余瑜
+     * 功能: 打印返回主菜单提示
+     * 内容：
+     * 1. 打印提示：“按回车返回主菜单”
+     * 参数:
+     * - 无
+     * 返回值:
+     * - 无
+     */
+    public static void printReturnHint() {
+        System.out.print("按回车返回主菜单");
+    }
+
+    /*
+     * 负责人: 彭依萍
+     * 功能: 打印操作提示
+     * 内容：
+     * 1. 打印提示：W上，S下，A左，D右，R重新开始，Q返回主菜单
+     * 参数:
+     * - 无
+     * 返回值:
+     * - 无
+     */
+    public static void printOperationHint() {
+        System.out.println("操作提示：W上，S下，A左，D右，R重新开始，Q返回主菜单");
+    }
+
+    /*
+     * 负责人: 彭依萍
+     * 功能: 展示胜利界面
+     * 内容：
+     * 1. 打印胜利文案：“胜利”
+     * 参数:
+     * - 无
+     * 返回值:
+     * - 无
+     */
+    public static void showVictory() {
+        System.out.println("胜利");
+    }
+
+    /*
+     * 负责人: 余瑜
      * 功能: 展示选关界面
      * 内容：
      * 1. 打印选择范围：1-<total>
@@ -111,10 +156,10 @@ public class ConsoleMenuView {
     public static void showSelectLevel(int total) {
         System.out.println("******************************");
         for (int i = 1; i <= total; i++) {
-            System.out.printf("          %d.关卡%d          \n", i, i);
+            System.out.printf("%d.关卡%d\n", i, i);
         }
-        System.out.println("           请选择关卡:          ");
-        System.out.println("        返回至主菜单请输入0       ");
+        System.out.println("请选择关卡:");
+        System.out.println("返回至主菜单请输入0");
         System.out.println("******************************");
     }
 }

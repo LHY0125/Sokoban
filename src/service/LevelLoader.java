@@ -7,6 +7,7 @@ import model.TileType;
 import java.io.BufferedReader;
 import java.io.File;
 import java.nio.file.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class LevelLoader {
@@ -42,7 +43,7 @@ public class LevelLoader {
 
         // 读取关卡文件内容到列表
         List<String> mapTxt = new ArrayList<>();
-        try (BufferedReader br = Files.newBufferedReader(folder.toPath())) {
+        try (BufferedReader br = Files.newBufferedReader(folder.toPath(), StandardCharsets.UTF_8)) {
             String line;
             while ((line = br.readLine()) != null) {
                 mapTxt.add(line);

@@ -1,5 +1,6 @@
 import java.util.Scanner;
 import model.GameState;
+import model.TileType;
 import service.LevelLoader;
 import service.MoveValidator;
 import service.GameEngine;
@@ -36,32 +37,66 @@ public class SokobanApp {
      * - 无
      */
     public static void main(String[] args) {
+        // // 设置控制台字符编码为UTF-8，避免中文乱码
+        // try {
+        //     System.setOut(new java.io.PrintStream(System.out, true, java.nio.charset.StandardCharsets.UTF_8));
+        //     System.setErr(new java.io.PrintStream(System.err, true, java.nio.charset.StandardCharsets.UTF_8));
+        // } catch (Exception e) {
+        // }
+        
         Scanner scanner = new Scanner(System.in);
-        while (true) {
+        // 主循环，展示主菜单并处理用户输入
+        mainLoop: while (true) {
             // 展示主菜单
             ConsoleMenuView.showMain();
             String input = scanner.nextLine();
 
-            // 处理用户输入
-            if ("1".equals(input)) {
-                gameLoop(scanner, 0);
-            } else if ("2".equals(input)) {
-                int total = LevelLoader.totalLevels();
-                ConsoleMenuView.showSelectLevel(total);
-                String lv = scanner.nextLine();
+            switch (input) {
+                case "1":
+                    // 进入关卡1（索引0）游戏循环
+                    gameLoop(scanner, 0);
+                    break;
+                case "2":
+                    // 展示选关提示，读取关卡编号并进入对应关卡
+                    int total = LevelLoader.totalLevels();
+                    ConsoleMenuView.showSelectLevel(total);
 
-                // 处理选关输入
-                if ("0".equals(lv)) {
-                    continue;
-                }
-
-                try {
-                    int level = Integer.parseInt(lv);
-                    gameLoop(scanner, Math.max(0, level - 1));
-                } catch (Exception ignored) {
-                }
-            } else if ("3".equals(input)) {
-                break;
+                    // 读取用户输入的关卡编号
+                    String lv = scanner.nextLine();
+                    if ("0".equals(lv)) {
+                        break;
+                    }
+                    
+                    // 解析用户输入的关卡编号，转换为索引（减1）
+                    try {
+                        int level = Integer.parseInt(lv);
+                        gameLoop(scanner, Math.max(0, level - 1));
+                    } catch (Exception ignored) {
+                    }
+                    break;
+                case "3":
+                    // 退出主循环
+                    break mainLoop;
+                case "4":
+                    // 展示团队信息
+                    ConsoleMenuView.showTeam();
+                    ConsoleMenuView.printReturnHint();
+                    scanner.nextLine();
+                    break;
+                case "5":
+                    // 展示游戏操作说明
+                    ConsoleMenuView.showHowToPlay();
+                    ConsoleMenuView.printReturnHint();
+                    scanner.nextLine();
+                    break;
+                case "6":
+                    // 展示游戏设置
+                    ConsoleMenuView.showSettings();
+                    ConsoleMenuView.printReturnHint();
+                    scanner.nextLine();
+                    break;
+                default:
+                    break;
             }
         }
         scanner.close();
@@ -96,10 +131,8 @@ public class SokobanApp {
         while (true) {
             // 渲染游戏状态
             ConsoleGameView.render(state);
-            // 提示用户输入方向
-            System.out.println("输入方向: W=上 S=下 A=左 D=右, Q=返回");
-            String input = scanner.nextLine();
             // 处理用户输入
+            String input = scanner.nextLine();
             if (input == null || input.isEmpty()) {
                 continue;
             }
@@ -117,14 +150,21 @@ public class SokobanApp {
             // 转换为移动方向
             try {
                 int dir = -1;
-                if (c == 'w') {
-                    dir = 0;
-                } else if (c == 's') {
-                    dir = 1;
-                } else if (c == 'a') {
-                    dir = 2;
-                } else if (c == 'd') {
-                    dir = 3;
+                switch (c) {
+                    case 'w':
+                        dir = 0;
+                        break;
+                    case 's':
+                        dir = 1;
+                        break;
+                    case 'a':
+                        dir = 2;
+                        break;
+                    case 'd':
+                        dir = 3;
+                        break;
+                    default:
+                        break;
                 }
                 if (dir == -1) {
                     continue;
@@ -147,17 +187,17 @@ public class SokobanApp {
 
                     // 检查移动是否会导致箱子被推到墙上
                     if (nx >= 0 && ny >= 0 && nx < state.map.length && ny < state.map[0].length) {
-                        if (state.base[nx][ny] == 1) {
+                        if (state.base[nx][ny] == TileType.WALL.code) {
                             System.out.println("无法移动，前方是墙");
                         }
 
-                        else if (t == 2 || t == 5) {
+                        else if (t == TileType.BOX.code || t == TileType.BOX_ON_GOAL.code) {
                             int bx = nx + dx;
                             int by = ny + dy;
                             if (bx >= 0 && by >= 0 && bx < state.map.length && by < state.map[0].length) {
                                 int behindDyn = state.map[bx][by];
                                 int behindBase = state.base[bx][by];
-                                if (behindBase == 1 || behindDyn == 2 || behindDyn == 5) {
+                                if (behindBase == TileType.WALL.code || behindDyn == TileType.BOX.code || behindDyn == TileType.BOX_ON_GOAL.code) {
                                     System.out.println("箱子无法推动");
                                 }
                             }

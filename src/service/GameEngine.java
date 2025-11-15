@@ -30,21 +30,21 @@ public class GameEngine {
         // 根据方向计算位移 (dx, dy)：0上/1下/2左/3右
         int dx = 0;
         int dy = 0;
-        if (direction == 0) {
-            // 上：x-1
-            dx = -1;
-        } else if (direction == 1) {
-            // 下：x+1
-            dx = 1;
-        } else if (direction == 2) {
-            // 左：y-1
-            dy = -1;
-        } else if (direction == 3) {
-            // 右：y+1
-            dy = 1;
-        } else {
-            // 非法方向，直接拒绝
-            return false;
+        switch (direction) {
+            case 0:
+                dx = -1;
+                break;
+            case 1:
+                dx = 1;
+                break;
+            case 2:
+                dy = -1;
+                break;
+            case 3:
+                dy = 1;
+                break;
+            default:
+                return false;
         }
 
         // 预取维度与玩家当前坐标
