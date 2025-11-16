@@ -1,9 +1,9 @@
 ; NSIS Install Script - Sokoban
-; Version: 1.0.0
+; Version: 2.0.0
 ; Author: LHY Team
 
 !define PRODUCT_NAME "Sokoban"
-!define PRODUCT_VERSION "1.0.0"
+!define PRODUCT_VERSION "2.0.0"
 !define PRODUCT_PUBLISHER "LHY Team"
 !define PRODUCT_WEB_SITE "https://github.com/LHY0125/Sokoban.git"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Sokoban.exe"
@@ -13,9 +13,12 @@
 ; Include Modern UI
 !include "MUI2.nsh"
 
+Unicode true
+RequestExecutionLevel admin
+
 ; MUI Settings
 !define MUI_ABORTWARNING
-!define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\modern-install.ico"
+!define MUI_ICON "..\dist\app\Sokoban\Sokoban.ico"
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
 
 ; Welcome page
@@ -47,9 +50,9 @@ ShowInstDetails show
 ShowUnInstDetails show
 
 ; Version information
-VIProductVersion "1.0.0.0"
+VIProductVersion "2.0.0.0"
 VIAddVersionKey /LANG=${LANG_SIMPCHINESE} "ProductName" "${PRODUCT_NAME}"
-VIAddVersionKey /LANG=${LANG_SIMPCHINESE} "Comments" "Gobang Game - Classic five-in-a-row strategy game with AI and network support"
+VIAddVersionKey /LANG=${LANG_SIMPCHINESE} "Comments" "Sokoban - Classic push-box puzzle"
 VIAddVersionKey /LANG=${LANG_SIMPCHINESE} "CompanyName" "${PRODUCT_PUBLISHER}"
 VIAddVersionKey /LANG=${LANG_SIMPCHINESE} "LegalTrademarks" "MIT License"
 VIAddVersionKey /LANG=${LANG_SIMPCHINESE} "LegalCopyright" "(c) 2025 ${PRODUCT_PUBLISHER}"
@@ -62,10 +65,11 @@ Section "Main Program" SEC01
   SetOverwrite ifnewer
   File "..\dist\app\Sokoban\Sokoban.exe"
   File /r "..\dist\app\Sokoban\runtime\*.*"
+  File "..\dist\app\Sokoban\Sokoban.ico"
   File "..\README.md"
   CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Sokoban.lnk" "$INSTDIR\Sokoban.exe"
-  CreateShortCut "$DESKTOP\${PRODUCT_NAME}.lnk" "$INSTDIR\Sokoban.exe"
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Sokoban.lnk" "$INSTDIR\Sokoban.exe" "" "$INSTDIR\Sokoban.ico"
+  CreateShortCut "$DESKTOP\${PRODUCT_NAME}.lnk" "$INSTDIR\Sokoban.exe" "" "$INSTDIR\Sokoban.ico"
 SectionEnd
 
 Section "Runtime" SEC02
