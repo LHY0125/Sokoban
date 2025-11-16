@@ -16,7 +16,7 @@ public class Leaderboard {
     }
 
     /*
-     * 负责人: 
+     * 负责人: 彭依萍
      * 功能: 获取排行榜文件路径
      * 内容：
      * 1. 返回 rank/level{N}.csv，N 为关卡索引 + 1
@@ -26,8 +26,12 @@ public class Leaderboard {
      * - Path：文件路径
      */
     private static Path fileFor(int levelIndex) {
-        
-        return 1;
+        // 获取根目录，即rank文件夹
+        Path rankDir = dir();
+        // 根据关卡索引来拼接文件名
+        String fileName = String.format("level%d.csv", levelIndex + 1);
+        // 根据根目录和文件名，返回排行榜文件路径
+        return rankDir.resolve(fileName);
     }
 
     /*
@@ -76,11 +80,11 @@ public class Leaderboard {
     }
 
     /*
-     * 负责人: 
+     * 负责人: 于诗鑫
      * 功能: 读取 TopN
      * 内容：
-     *  1. 基于已排序结果返回前 N 条记录；当总数不足 N 时返回全部
-     *  2. 保持原有顺序（升序），不做额外处理
+     * 1. 基于已排序结果返回前 N 条记录；当总数不足 N 时返回全部
+     * 2. 保持原有顺序（升序），不做额外处理
      * 异常与边界：
      * - limit < 0 视为 0（调用方应保证传入合法）
      * 复杂度：时间 O(N)，空间 O(N)（子列表拷贝）
@@ -89,9 +93,13 @@ public class Leaderboard {
      * - limit：返回条数上限（0 起）
      * 返回值:
      * - List<LeaderboardEntry>：最多 N 条记录
-    */
+     */
     public static List<LeaderboardEntry> readTop(int levelIndex, int limit) {
         List<LeaderboardEntry> list = read(levelIndex);
+        if (limit < 0) {
+            return new ArrayList<>();
+        }
+        return list.size() > limit ? new ArrayList<>(list.subList(0, limit)) : list;
         
         return list;
     }
