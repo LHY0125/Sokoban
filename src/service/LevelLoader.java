@@ -1,14 +1,14 @@
 package service;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.util.*;
+
 import model.GameState;
 import model.Position;
 import model.TileType;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.nio.file.*;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
 
 public class LevelLoader {
     /*

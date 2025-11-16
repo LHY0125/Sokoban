@@ -1,12 +1,13 @@
 package service;
 
+import java.util.ArrayDeque;
+import java.util.List;
+import java.util.Scanner;
+
 import model.GameState;
 import model.TileType;
 import view.ConsoleGameView;
 import view.ConsoleMenuView;
-import java.util.ArrayDeque;
-import java.util.Scanner;
-import java.util.List;
 
 public class MoveValidator {
     /*

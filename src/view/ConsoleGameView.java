@@ -1,13 +1,15 @@
 package view;
 
-import model.GameState;
-import util.Renderer;
-import model.TileType;
 import java.util.HashMap;
-import java.util.Scanner;
 import java.util.List;
-import service.Leaderboard;
+import java.util.Scanner;
+
+import model.GameState;
 import model.LeaderboardEntry;
+import model.TileType;
+import service.Leaderboard;
+import service.LevelLoader;
+import util.Renderer;
 
 public class ConsoleGameView {
     private static final String DEFAULT_ART = "      ";
@@ -210,5 +212,27 @@ public class ConsoleGameView {
         } catch (Exception ignored) {
             return false;
         }
+    }
+
+    /*
+     * 负责人: 刘航宇
+     * 功能: 计算下一个可解锁关卡索引
+     * 内容：
+     * 1. 遍历所有关卡，检查是否有已完成记录
+     * 2. 返回第一个未完成关卡的索引（若所有关卡均已完成，则返回0）
+     * 参数:
+     * - 无
+     * 返回值:
+     * - int：下一个可解锁关卡索引（0-based）
+     */
+    public static int nextLevelIndex() {
+        int total = LevelLoader.totalLevels();
+        for (int i = 0; i < total; i++) {
+            List<LeaderboardEntry> li = Leaderboard.readTop(i, 1);
+            if (li == null || li.isEmpty()) {
+                return i;
+            }
+        }
+        return 0;
     }
 }

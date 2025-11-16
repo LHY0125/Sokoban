@@ -1,12 +1,13 @@
+import java.util.ArrayDeque;
 import java.util.Scanner;
+
 import model.GameState;
 import service.LevelLoader;
 import service.MoveValidator;
 import service.Settings;
-import java.util.ArrayDeque;
-import view.ConsoleMenuView;
-import view.ConsoleGameView;
 import service.UndoUtil;
+import view.ConsoleGameView;
+import view.ConsoleMenuView;
 
 /**
  * @file SokobanApp.java
@@ -38,17 +39,23 @@ public class SokobanApp {
      * - 无
      */
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        // 初始化输入流 `Scanner`，尝试使用 "GBK" 编码，失败时回退到默认编码
+        Scanner scanner;
+        try {
+            scanner = new Scanner(System.in, "GBK");
+        } catch (Exception e) {
+            scanner = new Scanner(System.in);
+        }
+
         // 主循环，展示主菜单并处理用户输入
         mainLoop: while (true) {
-            // 展示主菜单
+            // 展示主菜单并读取用户输入
             ConsoleMenuView.showMain();
             String input = scanner.nextLine();
 
             switch (input) {
                 case "1":
-                    // 进入关卡1（索引0）游戏循环
-                    gameLoop(scanner, 0);
+                    gameLoop(scanner, ConsoleGameView.nextLevelIndex());
                     break;
                 case "2":
                     // 展示选关提示，读取关卡编号并进入对应关卡
@@ -151,21 +158,25 @@ public class SokobanApp {
             char c = Character.toLowerCase(input.charAt(0));
             switch (c) {
                 case 'w':
+                    // 向上移动
                     if (MoveValidator.handleMove(scanner, state, 0, undoStack, levelIndex)) {
                         return;
                     }
                     continue;
                 case 's':
+                    // 向下移动
                     if (MoveValidator.handleMove(scanner, state, 1, undoStack, levelIndex)) {
                         return;
                     }
                     continue;
                 case 'a':
+                    // 向左移动
                     if (MoveValidator.handleMove(scanner, state, 2, undoStack, levelIndex)) {
                         return;
                     }
                     continue;
                 case 'd':
+                    // 向右移动
                     if (MoveValidator.handleMove(scanner, state, 3, undoStack, levelIndex)) {
                         return;
                     }
@@ -185,11 +196,16 @@ public class SokobanApp {
                     ConsoleMenuView.showUndoConfirm();
                     String ans = scanner.nextLine();
                     if (ans != null && !ans.isEmpty() && (ans.charAt(0) == 'y' || ans.charAt(0) == 'Y')) {
+                        // 确认悔步
                         if (undoStack.isEmpty()) {
                             System.out.println("没有可撤销的步骤");
-                        } else if (undoUsed >= Settings.getMaxUndo()) {
+                        }
+                        // 悔步次数未超上限
+                        else if (undoUsed >= Settings.getMaxUndo()) {
                             System.out.println("达到悔步次数上限");
-                        } else {
+                        }
+                        // 执行悔步
+                        else {
                             UndoUtil.Snapshot s = undoStack.pop();
                             UndoUtil.restore(state, s);
                             if (state.steps > 0) {

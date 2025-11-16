@@ -2,8 +2,11 @@ package service;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +38,7 @@ public class Leaderboard {
     }
 
     /*
-     * 负责人: 
+     * 负责人: 张启亮
      * 功能: 保存单条排行榜记录
      * 内容：
      * 1. 确保目录存在：rank/
@@ -54,16 +57,30 @@ public class Leaderboard {
      * - 无
      */
     public static void save(int levelIndex, String name, int steps, String message) {
-        
+        try {
+            Files.createDirectories(dir());
+            String n = sanitize(name);
+            String m = sanitize(message);
+            Path f = fileFor(levelIndex);
+            try (BufferedWriter bw = Files.newBufferedWriter(
+                    f,
+                    StandardCharsets.UTF_8,
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.APPEND)) {
+                bw.write(n + "," + steps + "," + m);
+                bw.newLine();
+            }
+        } catch (Exception ignored) {
+        }
     }
 
     /*
-     * 负责人: 
+     * 负责人: 王宇晗
      * 功能: 读取并按步数升序排序
      * 内容：
-     *  1. 按行读取 CSV，解析三列：name,steps,message（仅当列数=3时有效）
-     *  2. 对 `steps` 解析失败的行直接忽略，保证数据健壮性
-     *  3. 使用升序排序（步数越少越靠前）
+     * 1. 按行读取 CSV，解析三列：name,steps,message（仅当列数=3时有效）
+     * 2. 对 `steps` 解析失败的行直接忽略，保证数据健壮性
+     * 3. 使用升序排序（步数越少越靠前）
      * 异常与边界：
      * - 文件不存在或无法读取会返回空列表
      * - 不做去重与合并，可能存在同名多条记录
@@ -72,10 +89,26 @@ public class Leaderboard {
      * - levelIndex：关卡索引（0 起）
      * 返回值:
      * - List<LeaderboardEntry>：升序列表
-    */
+     */
     public static List<LeaderboardEntry> read(int levelIndex) {
         List<LeaderboardEntry> list = new ArrayList<>();
-        
+        Path f = fileFor(levelIndex);
+        try (BufferedReader br = Files.newBufferedReader(f, StandardCharsets.UTF_8)) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",", 3);
+                if (parts.length == 3) {
+                    try {
+                        int steps = Integer.parseInt(parts[1].trim());
+                        list.add(new LeaderboardEntry(parts[0], steps, parts[2]));
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        list.sort((a, b) -> Integer.compare(a.steps, b.steps));
+
         return list;
     }
 
@@ -100,16 +133,14 @@ public class Leaderboard {
             return new ArrayList<>();
         }
         return list.size() > limit ? new ArrayList<>(list.subList(0, limit)) : list;
-        
-        return list;
     }
 
     /*
-     * 负责人: 
+     * 负责人: 赵帅尧
      * 功能: 文本清洗
      * 内容：
-     *  1. 将换行符（\n/\r）替换为空格，避免破坏 CSV 行结构
-     *  2. 将半角逗号替换为中文逗号，避免与列分隔符冲突
+     * 1. 将换行符（\n/\r）替换为空格，避免破坏 CSV 行结构
+     * 2. 将半角逗号替换为中文逗号，避免与列分隔符冲突
      * 异常与边界：
      * - 传入 null 返回空字符串
      * - 不处理引号与转义，CSV 仍采用最简格式
@@ -118,9 +149,20 @@ public class Leaderboard {
      * - s：原始字符串
      * 返回值:
      * - String：清洗后的字符串
-    */
+     */
     private static String sanitize(String s) {
-        
-        return s;
+        if (s == null) return "";
+        StringBuilder result = new StringBuilder(s.length());
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '\n' || c == '\r') {
+                result.append(' ');
+            } else if (c == ',') {
+                result.append('，');
+            } else {
+                result.append(c);
+            }
+        }
+        return result.toString();
     }
 }
