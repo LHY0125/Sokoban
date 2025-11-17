@@ -8,8 +8,8 @@ AppUpdatesURL=https://github.com/LHY0125/Sokoban.git
 DefaultDirName={autopf}\Sokoban
 DefaultGroupName=Sokoban
 AllowNoIcons=yes
-LicenseFile=..\README.md
-OutputDir=..\installer\dist
+LicenseFile=LICENSE.txt
+OutputDir=dist
 OutputBaseFilename=Sokoban_Inno_Setup
 Compression=lzma
 SolidCompression=yes
@@ -25,6 +25,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "..\dist\app\Sokoban\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\dist\Sokoban.jar"; DestDir: "{app}\app"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\Sokoban"; Filename: "{app}\Sokoban.exe"; IconFilename: "{app}\Sokoban.ico"

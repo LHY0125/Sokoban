@@ -6,6 +6,7 @@ import service.LevelLoader;
 import service.MoveValidator;
 import service.Settings;
 import service.UndoUtil;
+import util.ConsoleEncoding;
 import view.ConsoleGameView;
 import view.ConsoleMenuView;
 
@@ -28,7 +29,7 @@ public class SokobanApp {
      * 3. 输入处理：
      * - "1"：进入关卡1（索引0）游戏循环
      * - "2"：展示选关提示，读取关卡编号并进入对应关卡
-     * - "3"：退出循环并关闭输入
+     * - "3"：退出循环并关闭输入流
      * 4. 资源释放：退出时关闭 `Scanner`
      * 异常与边界：
      * - 非法输入（空/非数字）安全忽略或捕获异常
@@ -39,10 +40,13 @@ public class SokobanApp {
      * - 无
      */
     public static void main(String[] args) {
-        // 初始化输入流 `Scanner`，尝试使用 "GBK" 编码，失败时回退到默认编码
+        // 初始化控制台编码
+        String enc = ConsoleEncoding.init();
+        
+        // 初始化输入流 `Scanner`, 并设置编码
         Scanner scanner;
         try {
-            scanner = new Scanner(System.in, "GBK");
+            scanner = new Scanner(System.in, enc);
         } catch (Exception e) {
             scanner = new Scanner(System.in);
         }

@@ -24,7 +24,7 @@ RequestExecutionLevel admin
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
 ; License page
-!insertmacro MUI_PAGE_LICENSE "..\README.md"
+!insertmacro MUI_PAGE_LICENSE "LICENSE.txt"
 ; Components page
 !insertmacro MUI_PAGE_COMPONENTS
 ; Directory page
@@ -45,7 +45,7 @@ RequestExecutionLevel admin
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 OutFile "..\installer\dist\Sokoban_NSIS_Setup.exe"
 InstallDir "$PROGRAMFILES\Sokoban"
-InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
+InstallDirRegKey HKLM "${PRODUCT_UNINST_KEY}" "InstallLocation"
 ShowInstDetails show
 ShowUnInstDetails show
 
@@ -65,8 +65,12 @@ Section "Main Program" SEC01
   SetOverwrite ifnewer
   File "..\dist\app\Sokoban\Sokoban.exe"
   File /r "..\dist\app\Sokoban\runtime\*.*"
+  File /r "..\dist\app\Sokoban\app\*.*"
   File "..\dist\app\Sokoban\Sokoban.ico"
   File "..\README.md"
+  SetOutPath "$INSTDIR\app"
+  File "..\dist\Sokoban.jar"
+  SetOutPath "$INSTDIR"
   CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Sokoban.lnk" "$INSTDIR\Sokoban.exe" "" "$INSTDIR\Sokoban.ico"
   CreateShortCut "$DESKTOP\${PRODUCT_NAME}.lnk" "$INSTDIR\Sokoban.exe" "" "$INSTDIR\Sokoban.ico"
@@ -100,6 +104,7 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "InstallLocation" "$INSTDIR"
 SectionEnd
 
 ; Component descriptions

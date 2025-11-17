@@ -8,9 +8,10 @@
   - `model/` 游戏数据模型（`GameState`、`Position`、`TileType`）
   - `service/` 核心逻辑（`LevelLoader`、`MoveValidator`、`GameEngine`）
   - `view/` 控制台渲染与菜单（`ConsoleGameView`、`ConsoleMenuView`）
-  - `util/` 渲染字符映射（`Renderer`）
+- `util/` 控制台编码初始化（`ConsoleEncoding`）、渲染字符映射（`Renderer`）
 - `map/` 关卡文件（`level1.txt`、`level2.txt` ...）
 - `installer/` 安装脚本（`installer.iss`、`installer.nsi`）
+- `update_dist.ps1` 一键更新脚本（编译→覆盖→打包）
 - `LICENSE` MIT 许可证
 
 ## 快速开始（Windows）
@@ -24,13 +25,12 @@
    ```powershell
    java -Dfile.encoding=UTF-8 -cp bin SokobanApp
    ```
-4) 如控制台仍出现乱码或不能显示 Unicode：
-   - CMD 执行：`chcp 65001`
-   - PowerShell 设为 UTF-8：`[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()`
+4) 编码说明：程序会自动检测控制台代码页（UTF-8/GBK）并设置输出/输入编码，一般无需手动切到 UTF-8。
+   - 如仍出现乱码，可手动：CMD `chcp 65001` 或 PowerShell `[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()`
 
 ## 操作说明
 - 主菜单
-  - `1` 开始游戏（第 1 关）
+  - `1` 开始游戏（进入第一个未通关关卡）
   - `2` 选择关卡
   - `3` 退出
   - `4` 团队介绍
@@ -44,6 +44,7 @@
 ## 关卡文件规范
 - 路径与命名：`map/level{N}.txt`（例如 `map/level3.txt`）
 - 行宽一致：所有行长度必须一致，用于构建矩阵
+- 地图大小不受 10×10 限制：只需保证每行长度一致即可
 - 字符约定：
   - `#` 墙
   - `○` 目标点
@@ -80,8 +81,24 @@
   - 清屏与状态栏、矩阵渲染、胜利界面
 - `util/Renderer`
   - 按基础层/动态层输出字符（优先显示动态层）
+ - `util/ConsoleEncoding`
+   - 检测 Windows 控制台代码页并设置输出/输入编码，返回编码供 `Scanner` 使用
 
 ## 打包发布（Windows）
+- 当前安装包版本：`2.0.0`
+
+推荐使用一键脚本：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\update_dist.ps1 [-NoInstallCopy]
+```
+
+- 行为：编译源码（Java 17）→ 生成 `dist\Sokoban.jar` → 可选覆盖 `Sokoban\app\Sokoban.jar` → 运行 NSIS/Inno 生成安装包到 `installer\dist`
+- 依赖：
+  - NSIS：`D:\Program Files (x86)\NSIS\makensis.exe`
+  - Inno Setup：`D:\Program Files (x86)\Inno Setup 6\ISCC.exe`
+- 可选参数：`-NoInstallCopy` 跳过覆盖已安装目录的 JAR
+- 手动方式仍可参考下述命令：
 1) 生成可运行 JAR（需有 `build/manifest.mf` 指定 `Main-Class: SokobanApp`）：
    ```powershell
    jar --create --file dist\Sokoban.jar --manifest build\manifest.mf -C bin .
@@ -105,10 +122,10 @@
 
 ## 屏幕刷新与编码
 - 清屏/置顶光标（ANSI 序列）：`ESC[2J`、`ESC[3J`、`ESC[H`
-- 控制台需支持 UTF-8 与 Unicode 字形；不支持时可将玩家字符改为 `@` 等 ASCII。
+ - 程序启动时自动适配 UTF-8/GBK；若终端字体不支持 Unicode，可将玩家字符改为 `@` 等 ASCII。
 
 ## 常见问题
-- 中文/图形字符显示为 `?`：确保编译使用 `-encoding UTF-8`，运行添加 `-Dfile.encoding=UTF-8`，并使用支持 Unicode 的终端字体（如 Segoe UI Symbol/Consolas/Cascadia Mono）。
+- 中文/图形字符显示为 `?`：程序已自动检测并设置编码；如仍异常，手动切到 UTF-8，并使用支持 Unicode 的终端字体（如 Segoe UI Symbol/Consolas/Cascadia Mono）。
 
 ## 扩展与开发分工
 - 注释采用“负责人/功能/内容/异常与边界/参数/返回值”的详细风格，便于多人协作。
