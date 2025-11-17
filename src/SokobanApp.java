@@ -109,6 +109,12 @@ public class SokobanApp {
                         }
                     }
                     break;
+                case "tianzhuanjiawa":
+                    // 展示感谢界面
+                    ConsoleMenuView.showThanks();
+                    ConsoleMenuView.printReturnHint();
+                    scanner.nextLine();
+                    break;
                 default:
                     break;
             }
@@ -155,7 +161,12 @@ public class SokobanApp {
                 continue;
             }
 
-            // 转换为小写字母
+            // 检查是否通过输入作弊码强制胜利
+            if ("tianzhuanjiawa".equalsIgnoreCase(input.trim())) {
+                MoveValidator.forceWin(scanner, state, levelIndex);
+                return;
+            }
+            // 解析用户输入的移动方向
             char c = Character.toLowerCase(input.charAt(0));
             switch (c) {
                 case 'w':

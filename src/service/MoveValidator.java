@@ -1,7 +1,6 @@
 package service;
 
 import java.util.ArrayDeque;
-import java.util.List;
 import java.util.Scanner;
 
 import model.GameState;
@@ -92,6 +91,47 @@ public class MoveValidator {
     }
 
     /*
+     * 负责人：李俊杰
+     * 功能: 在强制输入作弊码通关当前关卡后展示胜利界面并要求玩家输入昵称与留言
+     */
+    public static boolean forceWin(Scanner scanner, GameState state, int levelIndex) {
+        return victoryFlow(scanner, state, levelIndex);
+    }
+
+    /*
+     * 负责人：刘航宇
+     * 功能: 展示胜利界面并要求玩家输入昵称与留言
+     * 内容：
+     * 1. 展示胜利界面
+     * 2. 要求玩家输入昵称与留言
+     * 3. 保存昵称、步数与留言到排行榜
+     * 4. 展示前10名玩家并等待回车返回主菜单
+     * 参数:
+     * - scanner：输入流，用于读取昵称/留言与等待回车
+     * - state：当前游戏状态
+     * - levelIndex：关卡索引（0起），用于排行榜读写
+     * 返回值:
+     * - boolean：若本次操作导致胜利返回 true，否则返回 false
+     */
+    private static boolean victoryFlow(Scanner scanner, GameState state, int levelIndex) {
+        // 展示胜利界面
+        ConsoleGameView.win();
+        // 要求玩家输入昵称与留言
+        System.out.print("请输入昵称: ");
+        String name = scanner.nextLine();
+        System.out.print("请输入留言: ");
+        String msg = scanner.nextLine();
+        // 保存昵称、步数与留言到排行榜
+        Leaderboard.save(levelIndex, name, state.steps, msg);
+        java.util.List<model.LeaderboardEntry> list = Leaderboard.readTop(levelIndex, 10);
+        ConsoleMenuView.showLeaderboard(levelIndex, list);
+        // 展示前10名玩家并等待回车返回主菜单
+        ConsoleMenuView.printReturnHint();
+        scanner.nextLine();
+        return true;
+    }
+
+    /*
      * 负责人: 刘航宇
      * 功能: 统一处理方向键移动与胜利流程
      * 内容：
@@ -117,21 +157,8 @@ public class MoveValidator {
 
                 // 检查是否胜利
                 if (GameEngine.isWin(state)) {
-                    ConsoleGameView.win();
-
-                    // 输入昵称与留言并保存到排行榜
-                    System.out.print("请输入昵称: ");
-                    String name = scanner.nextLine();
-                    System.out.print("请输入留言: ");
-                    String msg = scanner.nextLine();
-                    Leaderboard.save(levelIndex, name, state.steps, msg);
-                    List<model.LeaderboardEntry> list = Leaderboard.readTop(levelIndex, 10);
-                    ConsoleMenuView.showLeaderboard(levelIndex, list);
-
-                    // 等待用户回车返回主菜单
-                    ConsoleMenuView.printReturnHint();
-                    scanner.nextLine();
-                    return true;
+                    // 执行胜利流程
+                    return victoryFlow(scanner, state, levelIndex);
                 }
             }
             // 检查是否无法移动

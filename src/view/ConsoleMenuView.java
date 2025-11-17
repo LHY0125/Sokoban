@@ -124,6 +124,24 @@ public class ConsoleMenuView {
     }
 
     /*
+     * 负责人: 张启亮
+     * 功能: 展示感谢界面
+     * 内容：
+     * 1. 打印感谢文案：“感谢游玩添砖加瓦的推箱子游戏！”
+     * 2. 打印作者信息：“作者：添砖加瓦小组”
+     * 3. 打印鼓励信息：“希望你玩得开心^_^”
+     * 参数:
+     * - 无
+     * 返回值:
+     * - 无
+     */
+    public static void showThanks() {
+        System.out.println("感谢游玩添砖加瓦的推箱子游戏！");
+        System.out.println("作者：添砖加瓦小组");
+        System.out.println("希望你玩得开心^_^");
+    }
+
+    /*
      * 负责人: 彭依萍
      * 功能: 展示胜利界面
      * 内容：
