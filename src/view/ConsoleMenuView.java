@@ -38,20 +38,46 @@ public class ConsoleMenuView {
      * - 无
      */
     public static void showTeam() {
-        System.out.println("*****************************");
-        System.out.println("*****************************");
-        System.out.println("           添砖加瓦            ");
-        System.out.println("          组长 刘宇航          ");
-        System.out.println("         副组长 赵帅尧         ");
-        System.out.println("         信息官 王宇晗         ");
-        System.out.println("         信息官 于诗鑫         ");
-        System.out.println("        产品经理 彭依萍         ");
-        System.out.println("        产品经理 夏佳阔         ");
-        System.out.println("         技术官 李俊杰         ");
-        System.out.println("         技术官 张启亮         ");
-        System.out.println("         技术官 余瑜           ");
-        System.out.println("*****************************");
-        System.out.println("*****************************");
+        System.out.println("**********************************************************");
+        System.out.println("**********************************************************");
+        System.out.println("                       添砖加瓦                             ");
+        System.out.println("                      组长 刘宇航                           ");
+        System.out.println("负责main,gameLoop,showMain,win,toChar,fallback,Position函数 ");
+        System.out.println("        最不容易的一位,工作态度有98.6,因为似乎有1.4了            ");
+        System.out.println("//=========================================================");
+        System.out.println("                     副组长 赵帅尧                          ");
+        System.out.println("                     负责isWin函数                          ");
+        System.out.println("- .... .  /  ... -.- -.--  /  -... . .-.. --- -. --.  /  - ---  /  .... .- ...- --- -.-");
+        System.out.println("//=========================================================");
+        System.out.println("                      信息官 王宇晗                          ");
+        System.out.println("                   负责countLevels函数                      ");
+        System.out.println("                  故事的开头总是极具温柔的                      ");
+        System.out.println("//=========================================================");
+        System.out.println("                      信息官 于诗鑫                           ");
+        System.out.println("                      负责move函数                            ");
+        System.out.println("                       感谢碧昂丝                              ");
+        System.out.println("//=========================================================");
+        System.out.println("                     产品经理 彭依萍                          ");
+        System.out.println("                     负责render函数                           ");
+        System.out.println("     做点什么吧，给命运一点转动的机会，同时坚持住，别害怕，别放弃      ");
+        System.out.println("//=========================================================");
+        System.out.println("                     产品经理 夏佳阔                           ");
+        System.out.println("                     负责canMove函数                         ");
+        System.out.println("                     代码能跑别问别吵                          ");
+        System.out.println("//=========================================================");
+        System.out.println("                      技术官 李俊杰                           ");
+        System.out.println("                  负责load(游戏核心)函数                       ");
+        System.out.println("ZHNreGpyZWt4dHNrZ2s=(这是用在游戏关卡内的神秘小代码,解密后再使用.加密顺序为凯撒密码->base64密码)");
+        System.out.println("//=========================================================");
+        System.out.println("                      技术官 张启亮                            ");
+        System.out.println("                 负责remainingGoals函数                      ");
+        System.out.println("             在主菜单输入tianzhuanjiawa试试?                   ");
+        System.out.println("//=========================================================");
+        System.out.println("                       技术官 余瑜                            ");
+        System.out.println("负责showTeam,showHowToPlay,showSettings,showSelectLevel函数,还有彩蛋");
+        System.out.println("  5peg6IO955qE5oqA5pyv5a6Y(这是一段base64码的加密,试着解密看看)   ");
+        System.out.println("**********************************************************");
+        System.out.println("**********************************************************");
     }
 
     /*
