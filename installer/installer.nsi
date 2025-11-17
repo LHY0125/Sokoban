@@ -66,6 +66,8 @@ Section "Main Program" SEC01
   File "..\dist\app\Sokoban\Sokoban.exe"
   File /r "..\dist\app\Sokoban\runtime\*.*"
   File /r "..\dist\app\Sokoban\app\*.*"
+  SetOutPath "$INSTDIR\map"
+  File /r "..\dist\app\Sokoban\map\*.*"
   File "..\dist\app\Sokoban\Sokoban.ico"
   File "..\README.md"
   SetOutPath "$INSTDIR\app"

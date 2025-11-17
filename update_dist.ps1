@@ -43,6 +43,17 @@ if (-not $NoInstallCopy) {
     }
     Copy-Item -Force $distJar $installedJar 
 }
+
+# 同步关卡目录到应用镜像
+$mapSrc = 'map'
+$mapDest = 'dist\app\Sokoban\map'
+if (Test-Path $mapDest) {
+    Remove-Item -Recurse -Force $mapDest
+}
+if (Test-Path $mapSrc) {
+    New-Item -ItemType Directory -Force -Path $mapDest | Out-Null
+    Copy-Item -Recurse -Force "$mapSrc\*" $mapDest
+}
 # 打包 NSIS 安装程序
 & $nsis 'installer\installer.nsi'
 if ($LASTEXITCODE -ne 0) { 
