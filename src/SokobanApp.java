@@ -65,18 +65,15 @@ public class SokobanApp {
                     // 展示选关提示，读取关卡编号并进入对应关卡
                     int total = LevelLoader.totalLevels();
                     ConsoleMenuView.showSelectLevel(total);
-
                     // 读取用户输入的关卡编号
                     String lv = scanner.nextLine();
                     if ("0".equals(lv)) {
                         break;
                     }
-
                     // 校验并处理排行榜查看命令
                     if (ConsoleGameView.tryRank(lv, scanner)) {
                         break;
                     }
-                    
                     // 解析用户输入的关卡编号，转换为索引（减1）
                     try {
                         int level = Integer.parseInt(lv);
@@ -197,27 +194,22 @@ public class SokobanApp {
                     continue;
                 case 'z':
                     // 悔步操作
-                    ConsoleMenuView.showUndoConfirm();
-                    String ans = scanner.nextLine();
-                    if (ans != null && !ans.isEmpty() && (ans.charAt(0) == 'y' || ans.charAt(0) == 'Y')) {
-                        // 确认悔步
-                        if (undoStack.isEmpty()) {
-                            System.out.println("没有可撤销的步骤");
+                    if (undoStack.isEmpty()) {
+                        System.out.println("没有可撤销的步骤");
+                    }
+                    // 悔步次数未达上限
+                    else if (undoUsed >= Settings.getMaxUndo()) {
+                        System.out.println("达到悔步次数上限");
+                    }
+                    // 悔步成功
+                    else {
+                        UndoUtil.Snapshot s = undoStack.pop();
+                        UndoUtil.restore(state, s);
+                        if (state.steps > 0) {
+                            state.steps -= 1;
                         }
-                        // 悔步次数未超上限
-                        else if (undoUsed >= Settings.getMaxUndo()) {
-                            System.out.println("达到悔步次数上限");
-                        }
-                        // 执行悔步
-                        else {
-                            UndoUtil.Snapshot s = undoStack.pop();
-                            UndoUtil.restore(state, s);
-                            if (state.steps > 0) {
-                                state.steps -= 1;
-                            }
-                            undoUsed += 1;
-                            ConsoleGameView.render(state);
-                        }
+                        undoUsed += 1;
+                        ConsoleGameView.render(state);
                     }
                     continue;
                 default:

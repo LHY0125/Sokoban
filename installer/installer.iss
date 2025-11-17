@@ -1,6 +1,6 @@
 [Setup]
 AppName=Sokoban
-AppVersion=2.0.0
+AppVersion=2.1.0
 AppPublisher=LHY Team
 AppPublisherURL=https://github.com/LHY0125/Sokoban.git
 AppSupportURL=https://github.com/LHY0125/Sokoban.git

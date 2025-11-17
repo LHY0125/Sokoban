@@ -54,7 +54,15 @@ public class LevelLoader {
         }
 
         int h = mapTxt.size();
-        int w = (h > 0) ? mapTxt.get(0).length() : 0;
+        int w = 0;
+        // 计算最长的一行作为宽度
+        if (h > 0) {
+            for(String line : mapTxt) {
+                if (line.length() > w) {
+                    w = line.length();
+                }
+            }
+        }
 
         int[][] base = new int[h][w];
         int[][] map = new int[h][w];
@@ -63,7 +71,7 @@ public class LevelLoader {
         for (int i = 0; i < h; i++) {
             String line = mapTxt.get(i);
             for (int j = 0; j < w; j++) {
-                char ch = line.charAt(j);
+                char ch = j < line.length() ? line.charAt(j) : ' ';
                 switch (ch) {
                     case '#':
                         base[i][j] = TileType.WALL.code;

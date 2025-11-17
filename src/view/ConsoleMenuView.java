@@ -161,20 +161,6 @@ public class ConsoleMenuView {
     }
 
     /*
-     * 负责人: 刘航宇
-     * 功能: 展示悔步确认界面
-     * 内容：
-     * 1. 打印提示：“确认悔步? 输入 Y 确认 / N 取消”
-     * 参数:
-     * - 无
-     * 返回值:
-     * - 无
-     */
-    public static void showUndoConfirm() {
-        System.out.println("确认悔步? 输入 Y 确认 / N 取消");
-    }
-
-    /*
      * 负责人: 余瑜
      * 功能: 展示排行榜
      * 内容：
