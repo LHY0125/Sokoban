@@ -27,6 +27,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "..\dist\app\Sokoban\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\dist\Sokoban.jar"; DestDir: "{app}\app"; Flags: ignoreversion
 Source: "..\dist\app\Sokoban\map\*"; DestDir: "{app}\map"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\dist\app\Sokoban\rank\*"; DestDir: "{app}\rank"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\Sokoban"; Filename: "{app}\Sokoban.exe"; IconFilename: "{app}\Sokoban.ico"

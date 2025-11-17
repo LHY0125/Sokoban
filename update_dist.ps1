@@ -54,6 +54,17 @@ if (Test-Path $mapSrc) {
     New-Item -ItemType Directory -Force -Path $mapDest | Out-Null
     Copy-Item -Recurse -Force "$mapSrc\*" $mapDest
 }
+
+# 同步排行榜目录到应用镜像
+$rankSrc = 'rank'
+$rankDest = 'dist\app\Sokoban\rank'
+if (Test-Path $rankDest) {
+    Remove-Item -Recurse -Force $rankDest
+}
+New-Item -ItemType Directory -Force -Path $rankDest | Out-Null
+if (Test-Path $rankSrc) {
+    Copy-Item -Recurse -Force "$rankSrc\*" $rankDest
+}
 # 打包 NSIS 安装程序
 & $nsis 'installer\installer.nsi'
 if ($LASTEXITCODE -ne 0) { 
