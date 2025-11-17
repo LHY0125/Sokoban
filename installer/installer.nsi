@@ -69,7 +69,7 @@ Section "Main Program" SEC01
   SetOutPath "$INSTDIR\map"
   File /r "..\dist\app\Sokoban\map\*.*"
   SetOutPath "$INSTDIR\rank"
-  File /r "..\dist\app\Sokoban\rank\*.*"
+  File /nonfatal /r "..\dist\app\Sokoban\rank\*.*"
   File "..\dist\app\Sokoban\Sokoban.ico"
   File "..\README.md"
   SetOutPath "$INSTDIR\app"

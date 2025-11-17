@@ -29,6 +29,9 @@ Source: "..\dist\Sokoban.jar"; DestDir: "{app}\app"; Flags: ignoreversion
 Source: "..\dist\app\Sokoban\map\*"; DestDir: "{app}\map"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\dist\app\Sokoban\rank\*"; DestDir: "{app}\rank"; Flags: ignoreversion recursesubdirs createallsubdirs
 
+[Dirs]
+Name: "{app}\rank"
+
 [Icons]
 Name: "{group}\Sokoban"; Filename: "{app}\Sokoban.exe"; IconFilename: "{app}\Sokoban.ico"
 Name: "{group}\{cm:UninstallProgram,Sokoban}"; Filename: "{uninstallexe}"
