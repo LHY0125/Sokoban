@@ -88,9 +88,7 @@ public class ConsoleGameView {
 
             // 每打印完一行地图就换行
             System.out.println();
-        }
-
-        ConsoleMenuView.printOperationHint();
+        }   
     }
 
 
