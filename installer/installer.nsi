@@ -3,7 +3,7 @@
 ; Author: LHY Team
 
 !define PRODUCT_NAME "Sokoban"
-!define PRODUCT_VERSION "2.1.0"
+!define PRODUCT_VERSION "2.2.0"
 !define PRODUCT_PUBLISHER "LHY Team"
 !define PRODUCT_WEB_SITE "https://github.com/LHY0125/Sokoban.git"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Sokoban.exe"
@@ -50,7 +50,7 @@ ShowInstDetails show
 ShowUnInstDetails show
 
 ; Version information
-VIProductVersion "2.1.0.0"
+VIProductVersion "2.2.0.0"
 VIAddVersionKey /LANG=${LANG_SIMPCHINESE} "ProductName" "${PRODUCT_NAME}"
 VIAddVersionKey /LANG=${LANG_SIMPCHINESE} "Comments" "Sokoban - Classic push-box puzzle"
 VIAddVersionKey /LANG=${LANG_SIMPCHINESE} "CompanyName" "${PRODUCT_PUBLISHER}"
