@@ -1,13 +1,14 @@
 package service;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.util.*;
+
 import model.GameState;
 import model.Position;
 import model.TileType;
-
-import java.io.File;
-import java.nio.file.*;
-import java.util.*;
-import java.io.BufferedReader;
 
 public class LevelLoader {
     /*
@@ -42,7 +43,7 @@ public class LevelLoader {
 
         // 读取关卡文件内容到列表
         List<String> mapTxt = new ArrayList<>();
-        try (BufferedReader br = Files.newBufferedReader(folder.toPath())) {
+        try (BufferedReader br = Files.newBufferedReader(folder.toPath(), StandardCharsets.UTF_8)) {
             String line;
             while ((line = br.readLine()) != null) {
                 mapTxt.add(line);
@@ -53,7 +54,15 @@ public class LevelLoader {
         }
 
         int h = mapTxt.size();
-        int w = (h > 0) ? mapTxt.get(0).length() : 0;
+        int w = 0;
+        // 计算最长的一行作为宽度
+        if (h > 0) {
+            for(String line : mapTxt) {
+                if (line.length() > w) {
+                    w = line.length();
+                }
+            }
+        }
 
         int[][] base = new int[h][w];
         int[][] map = new int[h][w];
@@ -61,7 +70,8 @@ public class LevelLoader {
 
         for (int i = 0; i < h; i++) {
             String line = mapTxt.get(i);
-            for (int j = 0; j < w; j++) {
+            // 逐字符解析当前行
+            for (int j = 0; j < line.length(); j++) {
                 char ch = line.charAt(j);
                 switch (ch) {
                     case '#':
@@ -89,7 +99,7 @@ public class LevelLoader {
         }
 
         GameState gameState = new GameState(base, map, player, levelIndex, total);
-        //System.out.println(gameState);
+        // System.out.println(gameState);
 
         // 初始化游戏状态
         return gameState;
@@ -97,7 +107,7 @@ public class LevelLoader {
 
 
     /*
-     * 负责人: 
+     * 负责人: 王宇晗
      * 功能: 统计关卡数量
      * 内容：
      * 1. 扫描 `map` 目录：匹配形如 `level*.txt` 的关卡文件
@@ -111,17 +121,34 @@ public class LevelLoader {
      * 返回值:
      * - int：关卡总数
      */
-    public static int countLevels() {
-        final String dirPath = "map";
-        File folder = new File(dirPath);
+    private static int countLevels() {
+        // 1. 定位到项目内的map文件夹（相对项目根目录的路径）
+        String levelDirPath = "map/";
+        File mapDir = new File(levelDirPath);
 
-        if (folder.exists() && folder.isDirectory()) {
-            String[] files = folder.list((dir, name) -> name.matches("level\\d+\\.txt"));
-            if (files != null) {
-                return files.length;
-            }
+        // 2. 校验map文件夹是否存在
+        if (!mapDir.exists() || !mapDir.isDirectory()) {
+            return 1;
         }
-        return 1; // 默认至少有一个回退关卡
+
+        // 3. 筛选map文件夹中以"level"开头、".txt"结尾的文件
+        File[] levelFiles = mapDir.listFiles(file -> {
+            if (file == null || !file.isFile() || !file.canRead()) {
+                return false;
+            }
+            String fileName = file.getName();
+            return fileName.startsWith("level") && fileName.endsWith(".txt");
+        });
+
+        // 4. 统计符合条件的文件数量
+        if (levelFiles == null || levelFiles.length == 0) {
+            return 1;
+        }
+        return levelFiles.length;
+    }
+
+    public static int totalLevels() {
+        return countLevels();
     }
 
     /*
