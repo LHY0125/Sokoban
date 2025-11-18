@@ -206,9 +206,6 @@ public class MoveValidator {
                     }
                 }
             }
-            
-            // 渲染当前状态
-            ConsoleGameView.render(state);
         } catch (Exception ignored) {
         }
         

@@ -139,14 +139,15 @@ public class ConsoleMenuView {
      * 负责人: 彭依萍
      * 功能: 打印操作提示
      * 内容：
-     * 1. 打印提示：W上，S下，A左，D右，R重新开始，Q返回主菜单
+     * 1. 打印提示：W上，S下，A左，D右，R重新开始，Z悔步（已用次数/上限次数），Q返回主菜单
      * 参数:
-     * - 无
+     * - used：已用次数
+     * - max：上限次数
      * 返回值:
      * - 无
      */
-    public static void printOperationHint() {
-        System.out.println("操作提示：W上，S下，A左，D右，R重新开始，Z悔步，Q返回主菜单");
+    public static void printOperationHint(int used, int max) {
+        System.out.println("操作提示：W上，S下，A左，D右，R重新开始，Z悔步（" + used + "/" + max + (used >= max ? "，已满" : "") + "），Q返回主菜单");
     }
 
     /*

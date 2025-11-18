@@ -151,10 +151,12 @@ public class SokobanApp {
         // 用于存储玩家每一步的快照，用于悔步操作
         ArrayDeque<UndoUtil.Snapshot> undoStack = new ArrayDeque<>();
         int undoUsed = 0;
+        ConsoleMenuView.printOperationHint(undoUsed, Settings.getMaxUndo());
 
         while (true) {
             // 渲染游戏状态
             ConsoleGameView.render(state);
+            ConsoleMenuView.printOperationHint(undoUsed, Settings.getMaxUndo());
             // 处理用户输入
             String input = scanner.nextLine();
             if (input == null || input.isEmpty()) {
@@ -202,13 +204,14 @@ public class SokobanApp {
                     ConsoleGameView.render(state);
                     undoStack.clear();
                     undoUsed = 0;
+                    ConsoleMenuView.printOperationHint(undoUsed, Settings.getMaxUndo());
                     continue;
                 case 'z':
                     // 悔步操作
                     if (undoStack.isEmpty()) {
                         System.out.println("没有可撤销的步骤");
                     }
-                    // 悔步次数未达上限
+                    // 检查是否已达悔步次数上限
                     else if (undoUsed >= Settings.getMaxUndo()) {
                         System.out.println("达到悔步次数上限");
                     }
@@ -221,6 +224,7 @@ public class SokobanApp {
                         }
                         undoUsed += 1;
                         ConsoleGameView.render(state);
+                        ConsoleMenuView.printOperationHint(undoUsed, Settings.getMaxUndo());
                     }
                     continue;
                 default:
